@@ -56,18 +56,23 @@ const BookingSistem = () => {
         surname: controlBooking._formValues.surname,
         amount: controlBooking._formValues.amount,
         telf: controlBooking._formValues.telf, 
+        time: selectedTime,
       }
       const attributeString = JSON.stringify(atributte)
-      console.log(attributeString)
       const response = await axios.get('/api/createBooking', {
         params: { attributeString: attributeString }
       })
-      console.log(response)
-      if (response.status === 200) {
-        toast.success('Datos recibidos')
+      if (response.data?.bookingCreated) {
+        if (response.data.emailSent) {
+          toast.success('Reserva confirmada. Te hemos enviado un correo.')
+        } else {
+          toast.success('Reserva registrada. No se pudo enviar el correo de confirmación.')
+        }
         handleClickClose()
+      } else {
+        setIsLoadingButton(false)
+        toast.error('No se pudo registrar la reserva.')
       }
-        
     } catch (err) {
       setIsLoadingButton(false);
       toast.error('Error al cargar los datos. Por favor, recarga la página o intenta de nuevo más tarde.');
