@@ -41,6 +41,7 @@ const BookingSistem = () => {
   const handleClickClose = () => {
     reset()
     setShowTimeFields(false)
+    setSelectedTime('')
     setOpen(false)
     setIsLoadingButton(false)
   }
