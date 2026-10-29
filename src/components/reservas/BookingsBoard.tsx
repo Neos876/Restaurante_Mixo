@@ -23,11 +23,19 @@ function formatDate(date: string) {
   return label.charAt(0).toUpperCase() + label.slice(1);
 }
 
-export default function BookingsBoard({ bookings, today }: { bookings: Booking[]; today: string }) {
+type BoardStats = { completed: number; deleted: number; guestsServed: number };
+
+export default function BookingsBoard({
+  bookings,
+  today,
+  stats,
+}: {
+  bookings: Booking[];
+  today: string;
+  stats: BoardStats;
+}) {
   const [filter, setFilter] = useState<Filter>('all');
   const [query, setQuery] = useState('');
-
-  const upcoming = bookings.filter((b) => b.date >= today);
 
   const groups = useMemo(() => {
     const search = query.trim().toLowerCase();
@@ -47,10 +55,11 @@ export default function BookingsBoard({ bookings, today }: { bookings: Booking[]
   return (
     <div className="flex flex-col gap-8">
       <StatsBar
-        total={bookings.length}
-        upcoming={upcoming.length}
+        pending={bookings.length}
         today={bookings.filter((b) => b.date === today).length}
-        guests={upcoming.reduce((sum, b) => sum + Number(b.amount || 0), 0)}
+        completed={stats.completed}
+        guestsServed={stats.guestsServed}
+        deleted={stats.deleted}
       />
 
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">

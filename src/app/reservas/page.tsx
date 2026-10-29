@@ -1,6 +1,6 @@
 import '../globals.css';
 import BookingsBoard from '@/components/reservas/BookingsBoard';
-import { getBookings } from '@/lib/bookings';
+import { getBookings, getHistory } from '@/lib/bookings';
 
 export const dynamic = 'force-dynamic';
 
@@ -10,7 +10,12 @@ export const metadata = {
 };
 
 export default async function ReservasPage() {
-  const bookings = await getBookings();
+  const [bookings, history] = await Promise.all([getBookings(), getHistory()]);
+  const stats = {
+    completed: history.completed.length,
+    deleted: history.deleted.length,
+    guestsServed: history.completed.reduce((sum, b) => sum + Number(b.amount || 0), 0),
+  };
   const today = new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Madrid' });
 
   return (
@@ -21,7 +26,7 @@ export default async function ReservasPage() {
           <h1 className="text-balance text-3xl font-semibold md:text-4xl">Panel de reservas</h1>
           <p className="text-zinc-400">Todas las reservas recibidas desde el formulario, ordenadas por fecha.</p>
         </header>
-        <BookingsBoard bookings={bookings} today={today} />
+        <BookingsBoard bookings={bookings} today={today} stats={stats} />
       </div>
     </main>
   );
